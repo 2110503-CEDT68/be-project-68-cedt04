@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
+
 const UserSchema=new mongoose.Schema({
     name:{
         type:String,
@@ -17,7 +18,7 @@ const UserSchema=new mongoose.Schema({
     tel:{
         type: String,
         required:[true,'Please add a tel-number'],
-        match: [/^[0-9]{3}-[0-9]{7}$/, 'Please add a valid tel-number']
+        match: [/^[0-9]{3}[0-9]{7}$/, 'Please add a valid tel-number']
     },
     role: {
         type:String,

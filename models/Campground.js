@@ -29,6 +29,14 @@ const CampgroundSchema = new mongoose.Schema({
     region:{
         type: String,
         required: [true, 'Please add a region']
+    },
+    averageRating: {
+        type: Number,
+        default: 0
+    },
+    totalReviews: {
+        type: Number,
+        default: 0
     }
 },{
     toJSON: {virtuals:true},

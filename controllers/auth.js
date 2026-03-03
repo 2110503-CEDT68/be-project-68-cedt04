@@ -3,6 +3,7 @@ const User = require('../models/User');
 //@desc     Register user
 //@route    POST /api/v1/auth/register
 //@access   Public
+
 exports.register=async (req,res,next)=>{ 
     try{
         const {name, email, tel, password, role}=req.body;
@@ -26,6 +27,7 @@ exports.register=async (req,res,next)=>{
 //@desc     Login user
 //@route    POST /api/v1/auth/login
 //@access   Public
+
 exports.login=async (req, res, next)=>{
     const {email, password}=req.body;
     //Validate email & password
@@ -71,6 +73,7 @@ const sendTokenResponse=(user, statusCode, res)=>{
 //@desc     Get current Logged in user
 //@route    GET /api/vl/auth/me
 //@access   Private
+
 exports.getMe=async(req, res, next)=>{
     const user=await User.findById(req.user.id);
     res.status(200).json({
@@ -93,4 +96,54 @@ exports.logout = async (req, res, next) => {
         success: true,
         data: {}
     });
+};
+
+exports.updateDetails = async (req, res, next) => {
+  try {
+    const fieldsToUpdate = {
+      name: req.body.name,
+      tel: req.body.tel
+    };
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      fieldsToUpdate,
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.updatePassword = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).select('+password');
+
+    if (!(await user.matchPassword(req.body.currentPassword))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect current password'
+      });
+    }
+
+    user.password = req.body.newPassword;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+
+  } catch (err) {
+    next(err);
+  }
 };
